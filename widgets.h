@@ -421,7 +421,50 @@ public:
     QString TypeOfButton;
 };
 
-class EraseButton;
+class PortB : public QPushButton
+{
+    Q_OBJECT
+
+public:
+    PortB(N_MenuBLOCK *Menu = nullptr, VirtualWindow *parent = nullptr)
+        : QPushButton(Menu)
+        , N_Parent(Menu)
+        , MainW(parent)
+    {}
+
+    void mousePressEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent* event){
+        QPainter p(this);
+        p.setPen(((isFree) ? (Qt::green) : (Qt::red)));
+        p.setBrush(QBrush(Qt::gray));
+        p.drawRect(QRect(2,2,this->width()-4, this->height()-4));
+        p.setPen(Qt::white);
+        QFont f = this->font();
+        f.setPointSize(14);
+        f.setBold(1);
+        int wid, he;
+        QFontMetrics FM(f);
+        for (;;) {
+            wid = FM.horizontalAdvance(QString::number(Num));
+            he = FM.height();
+            if ((width() >= wid && height() >= he) || f.pointSize() == 1) {
+                break;
+            }
+            f.setPointSize(f.pointSize() - 1);
+            QFontMetrics tmp(f);
+            FM = tmp;
+        }
+        p.setFont(f);
+        p.drawText(QRect((width() - wid) / 2, (height() - he) / 2, wid, he),
+                   (QString::number(Num)));
+
+    }
+
+    int Num=1;
+    bool isFree=false;
+    N_MenuBLOCK *N_Parent;
+    VirtualWindow *MainW;
+};
 
 class DeleteButton : public QPushButton
 {
@@ -585,6 +628,21 @@ public:
         UserMenu->BUTTONS[0]->text() = "DELETE";
         UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25 / 2, 0.70 * heigth);
         UserMenu->BUTTONS[0]->resize(UserMenu->width() * 0.75, UserMenu->height() * 0.2);
+
+        if (parent->TypeELEM=="Server")
+            CountPorts=2;
+        else if (parent->TypeELEM=="Router")
+            CountPorts=4;
+        else if (parent->TypeELEM=="Switch")
+            CountPorts=8;
+        else if (parent->TypeELEM=="Client")
+            CountPorts=1;
+
+        UserMenu->BUTTONS.resize(CountPorts+1);
+        for (int i=0; i<CountPorts; ){
+            UserMenu->BUTTONS[i+1]=new PortB(UserMenu,  qobject_cast<VirtualWindow *>(Wind));
+            qobject_cast<PortB*>(UserMenu->BUTTONS[++i])->Num=i;
+        }
         UserMenu->hide();
         updateGeometry();
     }
@@ -602,8 +660,16 @@ public:
                               (int) (this->h() * 0.02 + this->y()),
                               (int) (this->w() * 0.88),
                               (int) (this->h() * 0.96));
-        UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25 / 2, 0.70 * heigth);
+        UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25 / 2, 0.70 * UserMenu->height());
         UserMenu->BUTTONS[0]->resize(UserMenu->width() * 0.75, UserMenu->height() * 0.2);
+        if (CountPorts==2){
+
+            UserMenu->BUTTONS[1]->resize(std::min(UserMenu->width() * 0.40, UserMenu->height() * 0.4), std::min(UserMenu->width() * 0.4, UserMenu->height() * 0.4));
+            UserMenu->BUTTONS[1]->move((UserMenu->width()/2 - UserMenu->BUTTONS[1]->width())/2, (UserMenu->height()*0.7-UserMenu->BUTTONS[1]->height())/2);
+
+            UserMenu->BUTTONS[2]->resize(UserMenu->BUTTONS[1]->width(),  UserMenu->BUTTONS[1]->height());
+            UserMenu->BUTTONS[2]->move(UserMenu->width()/2+(UserMenu->width()/2 - UserMenu->BUTTONS[2]->width())/2, UserMenu->BUTTONS[1]->y());
+        }
     }
 
     ~BlockMenu()
@@ -612,6 +678,7 @@ public:
         delete UserMenu;
     }
 
+    int CountPorts=0;
     N_MenuBLOCK *UserMenu = nullptr;
 };
 

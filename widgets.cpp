@@ -152,6 +152,11 @@ void DeleteButton::mousePressEvent(QMouseEvent *event)
     //par->
 }
 
+void PortB::mousePressEvent(QMouseEvent *event)
+{
+
+}
+
 void WidgetM::setGeometry(int x, int y, int w, int h)
 {
     this->move(x, y);
