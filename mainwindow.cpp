@@ -1,9 +1,9 @@
 #include "mainwindow.h"
-#include "objects.h"
+#include "widgets.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent, QRect Desctop)
-    : QMainWindow(parent)
+    : VirtualWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -63,7 +63,6 @@ QCursor c;
 
 int FukingActiveSlot = 0;
 int prev_x, prev_y;
-Object *SelectObject = nullptr;
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
@@ -138,7 +137,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (FukingActiveSlot) {
+    if (FukingActiveSlot && SelectObject!=nullptr) {
         T->stop();
         this->TempArea.setX(c.pos().x() - this->geometry().left());
         this->TempArea.setY(c.pos().y() - this->geometry().top());
@@ -183,6 +182,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                 fatherOrMother=fatherOrMother->parent;
             if (fatherOrMother==nullptr){
                 delete SelectObject;
+                SelectObject=nullptr;
             }else{
                 SelectObject->parent = fatherOrMother;
                 fatherOrMother->addChildren(SelectObject);
@@ -242,7 +242,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
     p.setPen(QPen(Qt::blue, 3, Qt::SolidLine));
     MainObject->paint(this, &p, IMenu);
     MainObject->paintChild(this, &p, IMenu);
-    if (SelectObject != nullptr) {
+    if (SelectObject != nullptr && SelectObject->TypeELEM!="") {
         SelectObject->paint(this, &p, IMenu);
         SelectObject->paintChild(this, &p, IMenu);
     }
