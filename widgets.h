@@ -1,8 +1,8 @@
 #ifndef WIDGETS_H
 #define WIDGETS_H
 
-#include "object.h"
 #include "VirtualWindow.h"
+#include "object.h"
 
 class N_ScrollWidget : public QWidget
 {
@@ -31,13 +31,13 @@ class N_MenuBLOCK : public QWidget
     Q_OBJECT
 
 public:
-    N_MenuBLOCK(QWidget *parent = nullptr, BlockMenu* menu=nullptr)
-        : QWidget(parent), MenuFather(menu)
+    N_MenuBLOCK(QWidget *parent = nullptr, BlockMenu *menu = nullptr)
+        : QWidget(parent)
+        , MenuFather(menu)
+    {}
+
+    void paintEvent(QPaintEvent *event)
     {
-    }
-
-    void paintEvent(QPaintEvent *event){
-
         QPainter p(this);
         p.setBrush(QBrush(Qt::lightGray));
         p.drawRect(0, 0, this->width(), this->height());
@@ -49,7 +49,6 @@ public:
     std::vector<QComboBox *> COMBOS;
     int OTS;
     BlockMenu *MenuFather;
-
 };
 
 class WidgetM : public QWidget
@@ -69,43 +68,50 @@ public:
 
 class ScrollBar;
 
-
-
-class Scrollable : public Widget{
+class Scrollable : public Widget
+{
 public:
-    Scrollable(double width, double heigth, double left, double top, Object *parent, Widget* CONTENT);
+    Scrollable(double width, double heigth, double left, double top, Object *parent, Widget *CONTENT);
 
-    ~Scrollable(){
+    ~Scrollable()
+    {
         //delete SCROLL;
         //delete CONTENT;
     }
 
-    void updateGeometry() override {
+    void updateGeometry() override
+    {
         this->width = this->parent->w() * kofWidth;
         this->heigth = this->parent->h() * kofHeigth;
         this->left = kofLeft * this->parent->w() + this->parent->x();
         this->top = this->parent->y() + this->parent->h() * kofTop;
-        CONTENT->kofWidth=1.0-12.0/parent->w();
+        CONTENT->kofWidth = 1.0 - 12.0 / parent->w();
         CONTENT->updateGeometry();
         child[1]->updateGeometry();
     }
 
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         this->DrawFrame(p);
     }
 
-    void paintChild(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paintChild(QMainWindow *Wind,
+                    QPainter *p,
+                    QImage Imag,
+                    QRect frame = QRect(-1, -1, -1, -1)) override
     {
-        int up=frame.y(), down=frame.y()+frame.height();
-        int left=frame.x(), right=frame.x()+frame.width();
+        int up = frame.y(), down = frame.y() + frame.height();
+        int left = frame.x(), right = frame.x() + frame.width();
 
-        down=std::min(down, this->y()+this->h());
-        right=std::min(right, this->x()+this->w());
-        up=std::max(up, this->y());
-        left=std::max(left, this->x());
+        down = std::min(down, this->y() + this->h());
+        right = std::min(right, this->x() + this->w());
+        up = std::max(up, this->y());
+        left = std::max(left, this->x());
 
-        frame=QRect(QPoint(left, up), QPoint(right, down));
+        frame = QRect(QPoint(left, up), QPoint(right, down));
         for (auto now : child) {
             p->setClipRect(frame);
             now->paint(Wind, p, Imag, frame);
@@ -115,28 +121,30 @@ public:
         }
     }
 
-
     void wheelEvent(QWheelEvent *event);
-    Widget* CONTENT = nullptr;
-    ScrollBar* SCROLL = nullptr;
+    Widget *CONTENT = nullptr;
+    ScrollBar *SCROLL = nullptr;
 };
 
 class ScrollBar : public Widget
 {
-
 public:
     ScrollBar(Widget *parent = nullptr, Widget *LinkedWidget = nullptr);
     ~ScrollBar()
     {
         //delete LinkedWidget;
-        if (T1!=nullptr)
+        if (T1 != nullptr)
             delete T1;
     }
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
-        if (parent!=nullptr && parent->TypeELEM=="Scrollable"){
-            Scrollable* par=(Scrollable*)this->parent;
-            if (par->CONTENT->kofHeigth<=1) return;
+        if (parent != nullptr && parent->TypeELEM == "Scrollable") {
+            Scrollable *par = (Scrollable *) this->parent;
+            if (par->CONTENT->kofHeigth <= 1)
+                return;
         }
         //DrawFrame(p);
         p->setBrush(QBrush(Qt::gray));
@@ -145,20 +153,24 @@ public:
         p->drawRect(ScrollBody);
     }
 
-    void updateGeometry() override{
-        this->kofLeft=1.0-12.0/(parent->w());
-        this->kofWidth=12.0/(parent->w());
-        this->kofHeigth=1.0;
-        this->kofTop=0.0;
+    void updateGeometry() override
+    {
+        this->kofLeft = 1.0 - 12.0 / (parent->w());
+        this->kofWidth = 12.0 / (parent->w());
+        this->kofHeigth = 1.0;
+        this->kofTop = 0.0;
         //this->moveToHARD(parent->x()+parent->w() - 12, parent->y()+0);
         //this->setSizeHARD(12, parent->h());
         this->width = this->parent->w() * kofWidth;
         this->heigth = this->parent->h() * kofHeigth;
         this->left = kofLeft * this->parent->w() + this->parent->x();
         this->top = this->parent->y() + this->parent->h() * kofTop;
-        if (parent!=nullptr && parent->TypeELEM=="Scrollable"){
-            Scrollable* par=(Scrollable*)this->parent;
-            ScrollBody = {this->x(), this->y()-(par->CONTENT->kofTop)*this->h(), 10, std::max(2, h() * h() / par->CONTENT->h())};
+        if (parent != nullptr && parent->TypeELEM == "Scrollable") {
+            Scrollable *par = (Scrollable *) this->parent;
+            ScrollBody = {this->x(),
+                          this->y() - (par->CONTENT->kofTop) * this->h(),
+                          10,
+                          std::max(2, h() * h() / par->CONTENT->h())};
         }
     }
 
@@ -166,8 +178,7 @@ public:
     void mouseReleaseEvent(QMouseEvent *event);
     QRect ScrollBody = {0, 0, 0, 0};
     Widget *LinkedWidget = nullptr;
-    QTimer *T1=nullptr;
-
+    QTimer *T1 = nullptr;
 
     void Tick();
 };
@@ -222,8 +233,7 @@ public:
         p->setBrush(i);
     }
 
-
-    const QString TypeELEM="TestWindow";
+    const QString TypeELEM = "TestWindow";
 
 protected:
     int Rad = 0;
@@ -235,9 +245,12 @@ public:
     FuncPanel(double width, double heigth, double left, double top, Object *parent, QMainWindow *Wind)
         : Widget(width, heigth, left, top, parent, QColor(0, 0, 0))
     {
-        TypeELEM=("FuncPanel");
+        TypeELEM = ("FuncPanel");
     }
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         if (IsOpen)
             p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1, 647, 213, 243));
@@ -254,7 +267,10 @@ public:
         double width, double heigth, double left, double top, Object *parent, QMainWindow *Wind)
         : Widget(width, heigth, left, top, parent, QColor(0, 0, 0))
     {}
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         if (IsOpen)
             p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(269, 650, 213, 380));
@@ -267,7 +283,7 @@ public:
 class Menu : public Object
 {
 public:
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1))
+    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame = QRect(-1, -1, -1, -1))
     {
         p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(0, 0, 1280, 644));
     }
@@ -284,7 +300,10 @@ public:
     {
         TypeELEM = "LeftMenu";
     }
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1281, 98, 101, 477));
         /*
@@ -344,12 +363,15 @@ public:
         TypeOfButton = "PipeMod";
         TypeELEM = "PipeModButton";
     }
-    bool isPipeMode=false;
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    bool isPipeMode = false;
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
-        if (isPipeMode==false){
+        if (isPipeMode == false) {
             p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(836, 651, 169, 121));
-        }else{
+        } else {
             p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1006, 652, 166, 119));
         }
         /*
@@ -363,9 +385,7 @@ public:
         */
     }
 
-    void click(){
-        isPipeMode=!isPipeMode;
-    }
+    void click() { isPipeMode = !isPipeMode; }
     /*void updateGeometry() override{
       this->width=this->parent->w()*kofWidth;
       this->heigth=this->parent->h()*kofHeigth;
@@ -388,7 +408,10 @@ public:
         IsButton = 1;
         TypeOfButton = "Block";
     }
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         //if (!parent->activate)
         //  p->drawRect(left, top, width, heigth);
@@ -405,14 +428,15 @@ class DeleteButton : public QPushButton
     Q_OBJECT
 
 public:
-    DeleteButton(N_MenuBLOCK *Menu = nullptr, VirtualWindow *parent=nullptr)
-        : QPushButton(Menu), N_Parent(Menu), MainW(parent)
-    {
-    }
+    DeleteButton(N_MenuBLOCK *Menu = nullptr, VirtualWindow *parent = nullptr)
+        : QPushButton(Menu)
+        , N_Parent(Menu)
+        , MainW(parent)
+    {}
 
     void mousePressEvent(QMouseEvent *event);
     N_MenuBLOCK *N_Parent;
-    VirtualWindow* MainW;
+    VirtualWindow *MainW;
 };
 
 class Workspace : public Widget
@@ -431,7 +455,10 @@ public:
         this->LinkedItem = LinkedItem;
         TypeELEM = "Workspace";
     }
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         //p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1280,0,273,97));
         QPen l = p->pen();
@@ -444,34 +471,39 @@ public:
         //BlockButton->paint(Wind, p, Imag);
     }
 
-    void paintChild(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paintChild(QMainWindow *Wind,
+                    QPainter *p,
+                    QImage Imag,
+                    QRect frame = QRect(-1, -1, -1, -1)) override
     {
-        if (frame==QRect(-1,-1,-1,-1)) frame=QRect(this->x(), this->y(), this->width, this->heigth);
+        if (frame == QRect(-1, -1, -1, -1))
+            frame = QRect(this->x(), this->y(), this->width, this->heigth);
         p->setClipRect(frame);
         for (auto now : child) {
-            if (now->TypeELEM=="Pipe")
+            if (now->TypeELEM == "Pipe")
                 now->paint(Wind, p, Imag, frame);
         }
         for (auto now : child) {
-            if (now->TypeELEM=="Pipe") continue;
+            if (now->TypeELEM == "Pipe")
+                continue;
             p->setClipRect(frame);
             now->paint(Wind, p, Imag, frame);
         }
         for (auto now : child) {
-            if (now->TypeELEM=="Pipe") continue;
+            if (now->TypeELEM == "Pipe")
+                continue;
             now->paintChild(Wind, p, Imag, frame);
         }
     }
-
-
-
-
 };
 
 class BlockMenu : public Widget
 {
 public:
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         if (LinkedItem->activate) {
             //p->drawRect(left, top, width, heigth);
@@ -486,8 +518,7 @@ public:
                 for (;;) {
                     wid = FM.horizontalAdvance("Ports");
                     he = FM.height();
-                    if (((1 - 0.3415) * h() >= wid && 0.08716 * w() >= he)
-                        || f.pointSize() == 1) {
+                    if (((1 - 0.3415) * h() >= wid && 0.08716 * w() >= he) || f.pointSize() == 1) {
                         break;
                     }
                     f.setPointSize(f.pointSize() - 1);
@@ -497,10 +528,7 @@ public:
                 p->setFont(f);
                 p->setPen(Qt::black);
                 p->rotate(-90);
-                p->drawText(QRect(y() * (-1) - h() + ((1 - 0.3415) * h() - wid) / 2,
-                                  x(),
-                                  wid,
-                                  he),
+                p->drawText(QRect(y() * (-1) - h() + ((1 - 0.3415) * h() - wid) / 2, x(), wid, he),
                             "Ports");
                 //p->drawLine (y()*(-1)-0.3415*h(), x()-100, y()*(-1)-0.3415*h(), x()+100);
                 //p->drawLine (y()*(-1)-0.3415*h()-100, x(), y()*(-1)-0.3415*h()+100, x());
@@ -553,9 +581,9 @@ public:
                               (int) (this->h() * 0.02 + this->y()),
                               (int) (this->w() * 0.88),
                               (int) (this->h() * 0.96));
-        UserMenu->BUTTONS.push_back(new DeleteButton(UserMenu, qobject_cast<VirtualWindow*>(Wind)));
-        UserMenu->BUTTONS[0]->text()="DELETE";
-        UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25/2, 0.70*heigth);
+        UserMenu->BUTTONS.push_back(new DeleteButton(UserMenu, qobject_cast<VirtualWindow *>(Wind)));
+        UserMenu->BUTTONS[0]->text() = "DELETE";
+        UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25 / 2, 0.70 * heigth);
         UserMenu->BUTTONS[0]->resize(UserMenu->width() * 0.75, UserMenu->height() * 0.2);
         UserMenu->hide();
         updateGeometry();
@@ -574,11 +602,12 @@ public:
                               (int) (this->h() * 0.02 + this->y()),
                               (int) (this->w() * 0.88),
                               (int) (this->h() * 0.96));
-        UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25/2, 0.70*heigth);
+        UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25 / 2, 0.70 * heigth);
         UserMenu->BUTTONS[0]->resize(UserMenu->width() * 0.75, UserMenu->height() * 0.2);
     }
 
-    ~BlockMenu(){
+    ~BlockMenu()
+    {
         LinkedItem = nullptr;
         delete UserMenu;
     }
@@ -589,12 +618,11 @@ public:
 class RouterBlock : public Widget
 {
 public:
-    int Num=12;
+    int Num = 12;
     RouterBlock(
         double width, double heigth, double left, double top, Object *parent, QMainWindow *Wind)
         : Widget(width, heigth, left, top, parent, QColor(0, 0, 0))
     {
-
         this->Wind = Wind;
         IsBlock = 1;
         TypeELEM = "Router";
@@ -612,20 +640,26 @@ public:
         addChildren(LinkedItem);
     }
 
-
-
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1280, 0, 273, 97));
-        p->drawImage(QRect(x()+0.46402*w(), y()+h()*0.37/2, w()*0.343, h()*0.63), Imag, QRect(615, 650, 123, 88));
+        p->drawImage(QRect(x() + 0.46402 * w(), y() + h() * 0.37 / 2, w() * 0.343, h() * 0.63),
+                     Imag,
+                     QRect(615, 650, 123, 88));
         //SERVER ICON p->drawImage(QRect(x()+0.48139*w(), y()+h()*0.11/2, w()*0.194, h()*0.89), Imag, QRect(535, 650, 78, 126));
         QString Text = "Router";
-        Text+=(Num ? " "+QString::number(Num): "");
+        Text += (Num ? " " + QString::number(Num) : "");
         QFont f = Wind->font();
         f.setPointSize(13);
         f.setBold(1);
         int wid, he;
-        QRect TextBound(x()+w()*0.044665, y()+h()*0.29078, w()*(0.46402-0.045), h()*0.411348);
+        QRect TextBound(x() + w() * 0.044665,
+                        y() + h() * 0.29078,
+                        w() * (0.46402 - 0.045),
+                        h() * 0.411348);
         QFontMetrics FM(f);
         for (;;) {
             wid = FM.horizontalAdvance(Text);
@@ -641,7 +675,8 @@ public:
         p->setFont(f);
         QPen l = p->pen();
         p->setPen(Qt::black);
-        p->drawText(QRect(TextBound.x() + (TextBound.width() - p->fontMetrics().horizontalAdvance(Text)) / 2,
+        p->drawText(QRect(TextBound.x()
+                              + (TextBound.width() - p->fontMetrics().horizontalAdvance(Text)) / 2,
                           TextBound.y() + (TextBound.height() - p->fontMetrics().height()) / 2,
                           100,
                           p->fontMetrics().height()),
@@ -680,7 +715,7 @@ public:
     {
         for (int i = 0; child.size() != 0;) {
             //child[i]->~Object();
-            if (child[i]!=nullptr)
+            if (child[i] != nullptr)
                 delete child[i];
             child.erase(child.begin());
         }
@@ -704,12 +739,11 @@ public:
 class SwitchBlock : public RouterBlock
 {
 public:
-    int Num=12;
+    int Num = 12;
     SwitchBlock(
         double width, double heigth, double left, double top, Object *parent, QMainWindow *Wind)
         : RouterBlock(width, heigth, left, top, parent, Wind)
     {
-
         this->Wind = Wind;
         IsBlock = 1;
         TypeELEM = "Switch";
@@ -728,20 +762,26 @@ public:
         addChildren(LinkedItem);
     }
 
-
-
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1280, 0, 273, 97));
-        p->drawImage(QRect(x()+0.44665*w(), y()+h()*0.51/2, w()*0.369727, h()*0.49), Imag, QRect(535, 778, 154, 68));
+        p->drawImage(QRect(x() + 0.44665 * w(), y() + h() * 0.51 / 2, w() * 0.369727, h() * 0.49),
+                     Imag,
+                     QRect(535, 778, 154, 68));
         //SERVER ICON p->drawImage(QRect(x()+0.48139*w(), y()+h()*0.11/2, w()*0.194, h()*0.89), Imag, QRect(535, 650, 78, 126));
         QString Text = "Switch";
-        Text+=(Num ? " "+QString::number(Num): "");
+        Text += (Num ? " " + QString::number(Num) : "");
         QFont f = Wind->font();
         f.setPointSize(13);
         f.setBold(1);
         int wid, he;
-        QRect TextBound(x()+w()*0.044665, y()+h()*0.29078, w()*(0.44665-0.045), h()*0.411348);
+        QRect TextBound(x() + w() * 0.044665,
+                        y() + h() * 0.29078,
+                        w() * (0.44665 - 0.045),
+                        h() * 0.411348);
         QFontMetrics FM(f);
         for (;;) {
             wid = FM.horizontalAdvance(Text);
@@ -757,7 +797,8 @@ public:
         p->setFont(f);
         QPen l = p->pen();
         p->setPen(Qt::black);
-        p->drawText(QRect(TextBound.x() + (TextBound.width() - p->fontMetrics().horizontalAdvance(Text)) / 2,
+        p->drawText(QRect(TextBound.x()
+                              + (TextBound.width() - p->fontMetrics().horizontalAdvance(Text)) / 2,
                           TextBound.y() + (TextBound.height() - p->fontMetrics().height()) / 2,
                           100,
                           p->fontMetrics().height()),
@@ -796,19 +837,26 @@ public:
 
         addChildren(BlockButton);
         addChildren(LinkedItem);
-
     }
-    void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
     {
         p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1454, 98, 299, 118));
-        p->drawImage(QRect(x()+0.5711*w(), y()+h()*0.2/2, w()*0.18578, h()*0.8), Imag, QRect(535, 650, 78, 126));
+        p->drawImage(QRect(x() + 0.5711 * w(), y() + h() * 0.2 / 2, w() * 0.18578, h() * 0.8),
+                     Imag,
+                     QRect(535, 650, 78, 126));
         QString Text = "Server";
-        Text+=(Num ? " "+QString::number(Num): "");
+        Text += (Num ? " " + QString::number(Num) : "");
         QFont f = Wind->font();
         f.setPointSize(13);
         f.setBold(1);
         int wid, he;
-        QRect TextBound(x()+w()*0.01376, y()+h()*0.533333/2, w()*(0.5711-0.014), h()*0.46666);
+        QRect TextBound(x() + w() * 0.01376,
+                        y() + h() * 0.533333 / 2,
+                        w() * (0.5711 - 0.014),
+                        h() * 0.46666);
         QFontMetrics FM(f);
         for (;;) {
             wid = FM.horizontalAdvance(Text);
@@ -824,7 +872,8 @@ public:
         p->setFont(f);
         QPen l = p->pen();
         p->setPen(Qt::black);
-        p->drawText(QRect(TextBound.x() + (TextBound.width() - p->fontMetrics().horizontalAdvance(Text)) / 2,
+        p->drawText(QRect(TextBound.x()
+                              + (TextBound.width() - p->fontMetrics().horizontalAdvance(Text)) / 2,
                           TextBound.y() + (TextBound.height() - p->fontMetrics().height()) / 2,
                           100,
                           p->fontMetrics().height()),
@@ -833,7 +882,5 @@ public:
     }
     QString Text;
 };
-
-
 
 #endif // WIDGETS_H

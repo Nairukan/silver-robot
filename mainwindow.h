@@ -1,14 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "widgets.h"
 #include "VirtualWindow.h"
+#include "widgets.h"
 
 namespace Ui {
 class MainWindow;
 }
-
-
 
 class MainWindow : public VirtualWindow
 {
@@ -30,8 +28,8 @@ public:
 
     std::vector<QString> OpenSessions;
     Workspace *MainWorkSpace;
-    Scrollable* MainWorkspace_father;
-    PipeModButton* PipeModB;
+    Scrollable *MainWorkspace_father;
+    PipeModButton *PipeModB;
 public slots:
     void Tick();
 

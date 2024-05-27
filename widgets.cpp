@@ -13,52 +13,51 @@ N_ScrollWidget::N_ScrollWidget(QWidget *parent, QWidget *LinkedWidget)
 N_MenuBLOCK::~N_MenuBLOCK()
 {
     for (auto now : EDITS) {
-        if (now!=nullptr){
-
+        if (now != nullptr) {
             delete now;
         }
     }
     for (auto now : BUTTONS) {
-        if (now!=nullptr){
+        if (now != nullptr) {
             //(DeleteButton*(now))->LinkedWidget=nullptr;
             delete now;
         }
     }
     for (auto now : LABELS) {
-        if (now!=nullptr)
+        if (now != nullptr)
             delete now;
     }
     for (auto now : COMBOS) {
-        if (now!=nullptr)
+        if (now != nullptr)
             delete now;
     }
     //delete N_Parent;
 }
 
-Scrollable::Scrollable(double width, double heigth, double left, double top, Object *parent, Widget* CONTENT)
+Scrollable::Scrollable(
+    double width, double heigth, double left, double top, Object *parent, Widget *CONTENT)
     : Widget(width, heigth, left, top, parent, QColor(0, 0, 0))
 {
-    TypeELEM=("Scrollable");
-    this->CONTENT=CONTENT;
+    TypeELEM = ("Scrollable");
+    this->CONTENT = CONTENT;
     addChildren(CONTENT);
-    bool ParentContainCONTENT=false;
+    bool ParentContainCONTENT = false;
     CONTENT->parent->removeChildren(CONTENT);
-    CONTENT->parent=this;
-    CONTENT->moveToHARD(this->x()+0, this->y()+0);
+    CONTENT->parent = this;
+    CONTENT->moveToHARD(this->x() + 0, this->y() + 0);
     CONTENT->setSizeHARD(this->w() - 12, this->h());
     SCROLL = new ScrollBar(this, CONTENT);
     addChildren(SCROLL);
-
 
     //SCROLL->moveToHARD(this->w() - 12, 0);
     //SCROLL->setSizeHARD(12, this->h());
 }
 
 ScrollBar::ScrollBar(Widget *parent, Widget *LinkedWidget)
-    : Widget(0,0,0,0, parent)
+    : Widget(0, 0, 0, 0, parent)
 {
-    TypeELEM="ScrollBar";
-    this->moveToHARD(parent->x()+parent->w() - 12, parent->y()+0);
+    TypeELEM = "ScrollBar";
+    this->moveToHARD(parent->x() + parent->w() - 12, parent->y() + 0);
     this->setSizeHARD(12, parent->h());
     this->LinkedWidget = LinkedWidget;
     ScrollBody = {parent->x(), parent->y(), 10, this->h() * this->h() / LinkedWidget->h()};
@@ -66,18 +65,14 @@ ScrollBar::ScrollBar(Widget *parent, Widget *LinkedWidget)
     //connect(T1, SIGNAL(timeout()), this, SLOT(Tick()));
 }
 
-
-
 void ScrollBar::Tick() {}
 
 void ScrollBar::mousePressEvent(QMouseEvent *event) {}
 
 void ScrollBar::mouseReleaseEvent(QMouseEvent *event) {}
 
-
 void N_ScrollWidget::paintEvent(QPaintEvent *event)
 {
-
     QPainter p(this);
     p.setBrush(QBrush(Qt::gray));
     p.drawRect(0, 0, this->width(), this->height());
@@ -90,7 +85,6 @@ void N_ScrollWidget::Tick() {}
 void N_ScrollWidget::mousePressEvent(QMouseEvent *event) {}
 
 void N_ScrollWidget::mouseReleaseEvent(QMouseEvent *event) {}
-
 
 WidgetM::WidgetM(QWidget *parent, BlockMenu *MenuFather)
     : QWidget(parent)
@@ -143,15 +137,16 @@ void WidgetM::wheelEvent(QWheelEvent *event)
 
 void DeleteButton::mousePressEvent(QMouseEvent *event)
 {
-    Object* par=(N_Parent)->MenuFather->parent;
-    Object* par_par=par->parent;
-    if (par_par==nullptr || par_par->TypeELEM!="Workspace") return;
+    Object *par = (N_Parent)->MenuFather->parent;
+    Object *par_par = par->parent;
+    if (par_par == nullptr || par_par->TypeELEM != "Workspace")
+        return;
     par_par->removeChildren(par);
-    N_Parent->BUTTONS[0]=nullptr;
+    N_Parent->BUTTONS[0] = nullptr;
     this->setParent(nullptr);
     delete par;
     this->hide();
-    MainW->SelectObject=nullptr;
+    MainW->SelectObject = nullptr;
     MainW->repaint();
     delete this;
     //par->

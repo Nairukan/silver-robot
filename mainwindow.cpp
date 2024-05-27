@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include "widgets.h"
 #include "ui_mainwindow.h"
+#include "widgets.h"
 
 MainWindow::MainWindow(QWidget *parent, QRect Desctop)
     : VirtualWindow(parent)
@@ -34,7 +34,8 @@ MainWindow::MainWindow(QWidget *parent, QRect Desctop)
                           0,
                           ui->menuBar->height());
     MainObject->addChildren(new LeftMenu(0.089, 0.74, 0, 0.015, MainObject));
-    MainObject->addChildren(this->PipeModB=new PipeModButton(0.07, 0.16, 0.006, 0.785, MainObject));
+    MainObject->addChildren(
+        this->PipeModB = new PipeModButton(0.07, 0.16, 0.006, 0.785, MainObject));
     MainObject->child[0]->addChildren(
         new RouterBlock(0.85, 0.065, 0.06, 0.06, MainObject->child[0], this));
     MainObject->child[0]->addChildren(
@@ -53,10 +54,9 @@ MainWindow::MainWindow(QWidget *parent, QRect Desctop)
     MainObject->addChildren(new VariablePanel(0.1645, 0.56, 0.8355, 0.412, MainObject, this));
     MainWorkSpace = new Workspace(0.748, 0.5, 0.087, 0.035, MainObject, nullptr, this);
 
-
-
     //MainWorkSpace->addChildren(new WidgetM());
-    MainObject->addChildren(MainWorkspace_father =new Scrollable(0.748, 0.94, 0.087, 0.035, MainObject, MainWorkSpace));
+    MainObject->addChildren(
+        MainWorkspace_father = new Scrollable(0.748, 0.94, 0.087, 0.035, MainObject, MainWorkSpace));
 }
 
 QCursor c;
@@ -96,7 +96,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         //if (SelectObject!=nullptr &&)
         if (SelectObject != nullptr && SelectObject->IsBlock
             && SelectObject->child[0]->whoIsDaddy(&TempArea) == nullptr && SelectObject->activate
-            && SelectObject->child[1]->whoIsDaddy(&TempArea) != nullptr) { //Если какой-то элемент активирован(Например открыто меню блока) и
+            && SelectObject->child[1]->whoIsDaddy(&TempArea)
+                   != nullptr) { //Если какой-то элемент активирован(Например открыто меню блока) и
         } else {
             if (SelectObject != nullptr && SelectObject->IsBlock && SelectObject->activate
                 && SelectObject->whoIsDaddy(&TempArea) == nullptr) {
@@ -106,8 +107,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             SelectObject = MainObject->whoIsDaddy(&TempArea);
             if (SelectObject != nullptr) {
                 if (SelectObject->IsBlock) {
-
-                    if (!PipeModB->isPipeMode){
+                    if (!PipeModB->isPipeMode) {
                         FukingActiveSlot++;
                         prev_x = c.pos().x();
                         prev_y = c.pos().y();
@@ -119,8 +119,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
                         SelectObject->parent->activate = !(SelectObject->parent->activate);
                         SelectObject->parent->ClickBut();
                         SelectObject = SelectObject->parent;
-                    }else{
-                        ((PipeModButton*)SelectObject)->click();
+                    } else {
+                        ((PipeModButton *) SelectObject)->click();
                     }
                 }
             }
@@ -137,14 +137,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (FukingActiveSlot && SelectObject!=nullptr) {
+    if (FukingActiveSlot && SelectObject != nullptr) {
         T->stop();
         this->TempArea.setX(c.pos().x() - this->geometry().left());
         this->TempArea.setY(c.pos().y() - this->geometry().top());
         if (SelectObject != MainObject) {
             int w = SelectObject->w(), h = SelectObject->h();
             if (SelectObject->IsBlock && SelectObject->parent->TypeELEM == "LeftMenu") {
-
                 //QMessageBox::information(this, "Info", "SelectedItem.Old_Parent==LeftMenu");
                 if (SelectObject->TypeELEM == "Router") {
                     SelectObject->parent->addChildren(
@@ -152,43 +151,45 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                 } else if (SelectObject->TypeELEM == "Switch") {
                     MainObject->child[0]->addChildren(
                         new SwitchBlock(0.85, 0.065, 0.06, 0.145, MainObject->child[0], this));
-                //} else if (SelectObject->TypeELEM == "DataInput") {
-                //    MainObject->child[0]->addChildren(
-                //        new DataInputBlock(0.85, 0.065, 0.06, 0.29, MainObject->child[0], this));
-                //} else if (SelectObject->TypeELEM == "DataOutput") {
-                //    MainObject->child[0]->addChildren(
-                //        new DataOutputBlock(0.85, 0.065, 0.06, 0.375, MainObject->child[0], this));
+                    //} else if (SelectObject->TypeELEM == "DataInput") {
+                    //    MainObject->child[0]->addChildren(
+                    //        new DataInputBlock(0.85, 0.065, 0.06, 0.29, MainObject->child[0], this));
+                    //} else if (SelectObject->TypeELEM == "DataOutput") {
+                    //    MainObject->child[0]->addChildren(
+                    //        new DataOutputBlock(0.85, 0.065, 0.06, 0.375, MainObject->child[0], this));
                 } else if (SelectObject->TypeELEM == "Server") {
                     MainObject->child[0]->addChildren(
                         new ServerBlock(0.85, 0.065, 0.06, 0.46, MainObject->child[0], this));
-                //} else if (SelectObject->TypeELEM == "If") {
-                //    MainObject->child[0]->addChildren(
-                //        new IfBlock(0.85, 0.065, 0.06, 0.605, MainObject->child[0], this));
-                //} else if (SelectObject->TypeELEM == "While") {
-                //    MainObject->child[0]->addChildren(
-                //        new WhileBlock(0.85, 0.065, 0.06, 0.69, MainObject->child[0], this));
+                    //} else if (SelectObject->TypeELEM == "If") {
+                    //    MainObject->child[0]->addChildren(
+                    //        new IfBlock(0.85, 0.065, 0.06, 0.605, MainObject->child[0], this));
+                    //} else if (SelectObject->TypeELEM == "While") {
+                    //    MainObject->child[0]->addChildren(
+                    //        new WhileBlock(0.85, 0.065, 0.06, 0.69, MainObject->child[0], this));
                 }
-            }
-            else{
-                QMessageBox::information(this, "Info", "SelectedItem.Old_Parent!=LeftMenu\n"+QString("OLD_parent=="+SelectObject->parent->TypeELEM));
-
+            } else {
+                QMessageBox::information(this,
+                                         "Info",
+                                         "SelectedItem.Old_Parent!=LeftMenu\n"
+                                             + QString("OLD_parent=="
+                                                       + SelectObject->parent->TypeELEM));
             }
             SelectObject->parent->child.erase(std::find(SelectObject->parent->child.begin(),
                                                         SelectObject->parent->child.end(),
                                                         SelectObject));
 
             Object *fatherOrMother = MainObject->whoIsDaddy(&TempArea);
-            while (fatherOrMother!=nullptr && fatherOrMother->TypeELEM!="Workspace")
-                fatherOrMother=fatherOrMother->parent;
-            if (fatherOrMother==nullptr){
+            while (fatherOrMother != nullptr && fatherOrMother->TypeELEM != "Workspace")
+                fatherOrMother = fatherOrMother->parent;
+            if (fatherOrMother == nullptr) {
                 delete SelectObject;
-                SelectObject=nullptr;
-            }else{
+                SelectObject = nullptr;
+            } else {
                 SelectObject->parent = fatherOrMother;
                 fatherOrMother->addChildren(SelectObject);
                 SelectObject->setSizeHARD(SelectObject->w(), SelectObject->h());
                 SelectObject->moveToHARD(SelectObject->x(), SelectObject->y());
-            //QMessageBox::critical(this, QString::number(SelectObject->parent->child.size()), "Release");
+                //QMessageBox::critical(this, QString::number(SelectObject->parent->child.size()), "Release");
             }
         }
         FukingActiveSlot--;
@@ -196,28 +197,35 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     RebuildThis(MainWorkSpace);
 }
 
-void MainWindow::wheelEvent(QWheelEvent *event){
+void MainWindow::wheelEvent(QWheelEvent *event)
+{
     this->TempArea.setX(c.pos().x() - this->geometry().left());
     this->TempArea.setY(c.pos().y() - this->geometry().top());
-    Object* selectedItem=MainObject->whoIsDaddy(&TempArea);
-    while (selectedItem!=nullptr && ((Widget*)(selectedItem))->TypeELEM!="Scrollable")
-        selectedItem=selectedItem->parent;
-    if (selectedItem==nullptr) return;
-    Scrollable* ActiveScrollArea=(Scrollable*)selectedItem;
-    if (ActiveScrollArea->CONTENT->kofHeigth<=1){//QMessageBox::information(this, "Info", QString::number(ActiveScrollArea->h()/double(ActiveScrollArea->CONTENT->h())));
+    Object *selectedItem = MainObject->whoIsDaddy(&TempArea);
+    while (selectedItem != nullptr && ((Widget *) (selectedItem))->TypeELEM != "Scrollable")
+        selectedItem = selectedItem->parent;
+    if (selectedItem == nullptr)
+        return;
+    Scrollable *ActiveScrollArea = (Scrollable *) selectedItem;
+    if (ActiveScrollArea->CONTENT->kofHeigth
+        <= 1) { //QMessageBox::information(this, "Info", QString::number(ActiveScrollArea->h()/double(ActiveScrollArea->CONTENT->h())));
         return;
     }
     if (event->angleDelta().y() > 0) {
         ActiveScrollArea->CONTENT->moveHARD(0, 15 * 2);
         if (ActiveScrollArea->CONTENT->kofTop >= 0) {
-            ActiveScrollArea->CONTENT->kofTop=0;
+            ActiveScrollArea->CONTENT->kofTop = 0;
         }
         ActiveScrollArea->updateGeometry();
         repaint();
     } else {
         ActiveScrollArea->CONTENT->moveHARD(0, -15 * 2);
-        if (ActiveScrollArea->CONTENT->h() + ActiveScrollArea->CONTENT->y() <= ActiveScrollArea->h()+ActiveScrollArea->y()) {
-            ActiveScrollArea->CONTENT->moveHARD(0, ActiveScrollArea->h()+ActiveScrollArea->y() - (ActiveScrollArea->CONTENT->h() + ActiveScrollArea->CONTENT->y()));
+        if (ActiveScrollArea->CONTENT->h() + ActiveScrollArea->CONTENT->y()
+            <= ActiveScrollArea->h() + ActiveScrollArea->y()) {
+            ActiveScrollArea->CONTENT->moveHARD(0,
+                                                ActiveScrollArea->h() + ActiveScrollArea->y()
+                                                    - (ActiveScrollArea->CONTENT->h()
+                                                       + ActiveScrollArea->CONTENT->y()));
         }
         ActiveScrollArea->updateGeometry();
         repaint();
@@ -242,7 +250,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
     p.setPen(QPen(Qt::blue, 3, Qt::SolidLine));
     MainObject->paint(this, &p, IMenu);
     MainObject->paintChild(this, &p, IMenu);
-    if (SelectObject != nullptr && SelectObject->TypeELEM!="") {
+    if (SelectObject != nullptr && SelectObject->TypeELEM != "") {
         SelectObject->paint(this, &p, IMenu);
         SelectObject->paintChild(this, &p, IMenu);
     }
@@ -262,28 +270,28 @@ void MainWindow::RebuildThis(Workspace *AnyWorkSpace)
 {
     // QMessageBox::critical(this, "Way of Process", "Begin RebuildThis");
     int SumHight = 0;
-    double PointY = 15.0/AnyWorkSpace->h();
-    if (AnyWorkSpace != nullptr){
+    double PointY = 15.0 / AnyWorkSpace->h();
+    if (AnyWorkSpace != nullptr) {
         //QMessageBox::critical(this, "Way of Process", "RebuildThis: "+QString::number(AnyWorkSpace->heigth));
         for (int i = 0; i < AnyWorkSpace->child.size(); i++) {
             AnyWorkSpace->child[i]
                 ->moveToHARD((double) ((AnyWorkSpace->width - AnyWorkSpace->child[i]->width) / 2
                                        + AnyWorkSpace->left),
                              PointY * AnyWorkSpace->heigth + AnyWorkSpace->top);
-            PointY += AnyWorkSpace->child[i]->kofHeigth + 10.0/AnyWorkSpace->h();
+            PointY += AnyWorkSpace->child[i]->kofHeigth + 10.0 / AnyWorkSpace->h();
         }
-        PointY += 15.0/AnyWorkSpace->h();
-        if (PointY > 1.0){
-
-            for(auto child: AnyWorkSpace->child){
-                child->kofTop=(child->y()-AnyWorkSpace->y())/double(PointY*AnyWorkSpace->h());
-                child->kofHeigth=(child->h())/double(PointY*AnyWorkSpace->h());
+        PointY += 15.0 / AnyWorkSpace->h();
+        if (PointY > 1.0) {
+            for (auto child : AnyWorkSpace->child) {
+                child->kofTop = (child->y() - AnyWorkSpace->y())
+                                / double(PointY * AnyWorkSpace->h());
+                child->kofHeigth = (child->h()) / double(PointY * AnyWorkSpace->h());
             }
 
-            AnyWorkSpace->kofHeigth=PointY*AnyWorkSpace->h()/AnyWorkSpace->parent->h();
+            AnyWorkSpace->kofHeigth = PointY * AnyWorkSpace->h() / AnyWorkSpace->parent->h();
             //AnyWorkSpace->setSize(AnyWorkSpace->kofWidth, PointY);
             //QMessageBox::information(this, "Info", QString::number(AnyWorkSpace->child[0]->h())+"="+QString::number(AnyWorkSpace->h()*PointY*AnyWorkSpace->child[0]->kofHeigth));
-            if (AnyWorkSpace->parent!=nullptr && AnyWorkSpace->parent->TypeELEM=="Scrollable"){
+            if (AnyWorkSpace->parent != nullptr && AnyWorkSpace->parent->TypeELEM == "Scrollable") {
                 AnyWorkSpace->parent->updateGeometry();
             }
         }

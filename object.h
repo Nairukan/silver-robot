@@ -1,7 +1,6 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-
 #include <QBrush>
 #include <QComboBox>
 #include <QCursor>
@@ -31,7 +30,7 @@ class Object
 public:
     Object(double width, double heigth, double left, double top)
     {
-        TypeELEM="Object";
+        TypeELEM = "Object";
         this->width = width;
         this->heigth = heigth;
         this->left = left;
@@ -41,7 +40,7 @@ public:
     {
         for (int i = 0; child.size() != 0;) {
             //child[i]->~Object();
-            if (child[i]!=nullptr)
+            if (child[i] != nullptr)
                 delete child[i];
             child.erase(child.begin());
         }
@@ -77,13 +76,20 @@ public:
         p->setPen(QPen(Qt::red, _BrushSize, Qt::SolidLine));
         p->drawRect(this->left, this->top, this->width, this->heigth);
     }
-    virtual void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1))
+    virtual void paint(QMainWindow *Wind,
+                       QPainter *p,
+                       QImage Imag,
+                       QRect frame = QRect(-1, -1, -1, -1))
     {
         //DrawFrame(Wind, p);
     }
-    virtual void paintChild(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1))
+    virtual void paintChild(QMainWindow *Wind,
+                            QPainter *p,
+                            QImage Imag,
+                            QRect frame = QRect(-1, -1, -1, -1))
     {
-        if (frame==QRect(-1,-1,-1,-1)) frame=QRect(this->x(), this->y(), this->width, this->heigth);
+        if (frame == QRect(-1, -1, -1, -1))
+            frame = QRect(this->x(), this->y(), this->width, this->heigth);
         for (auto now : child) {
             p->setClipRect(frame);
             now->paint(Wind, p, Imag, frame);
@@ -107,9 +113,11 @@ public:
             return nullptr;
     }
     void addChildren(Object *SonOrDother) { child.push_back(SonOrDother); }
-    void removeChildren(Object *Elem){
-        auto it=std::find(child.begin(), child.end(), Elem);
-        if (it!=child.end()) child.erase(it);
+    void removeChildren(Object *Elem)
+    {
+        auto it = std::find(child.begin(), child.end(), Elem);
+        if (it != child.end())
+            child.erase(it);
     }
     int w() { return width; }
     int h() { return heigth; }
@@ -131,7 +139,6 @@ protected:
     friend MainWindow;
 };
 
-
 class Widget : public Object
 {
 public:
@@ -147,7 +154,7 @@ public:
                  left * parent->width + parent->left,
                  top * parent->heigth + parent->top)
     {
-        TypeELEM=("Widget");
+        TypeELEM = ("Widget");
         this->parent = parent;
         kofWidth = (double) this->width / this->parent->width;
         kofHeigth = (double) this->heigth / this->parent->heigth;
@@ -218,17 +225,15 @@ public:
     Widget *LinkedItem = nullptr;
     //bool isSizeAutochange = true;
 
-    ~Widget(){
-        if (LinkedItem!=nullptr)
+    ~Widget()
+    {
+        if (LinkedItem != nullptr)
             delete LinkedItem;
-        LinkedItem=nullptr;
+        LinkedItem = nullptr;
     }
-
 
 protected:
     QColor bcgColor;
 };
-
-
 
 #endif // OBJECT_H
