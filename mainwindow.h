@@ -1,13 +1,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "objects.h"
+#include "widgets.h"
+#include "VirtualWindow.h"
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+
+
+class MainWindow : public VirtualWindow
 {
     Q_OBJECT
 
@@ -24,6 +27,7 @@ public:
     ~MainWindow();
     int h = 0;
     QImage IMenu;
+
     std::vector<QString> OpenSessions;
     Workspace *MainWorkSpace;
     Scrollable* MainWorkspace_father;
