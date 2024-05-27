@@ -27,7 +27,7 @@ public:
     std::vector<QString> OpenSessions;
     Workspace *MainWorkSpace;
     Scrollable* MainWorkspace_father;
-    //, ILeftMenu, IBeginBlock, IEndBlock, IDataInputBlock, IDataOutputBlock, IArithmeticBlock, IIfBlock, IWhileBlock;
+    PipeModButton* PipeModB;
 public slots:
     void Tick();
 

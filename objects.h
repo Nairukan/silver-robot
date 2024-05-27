@@ -801,8 +801,8 @@ public:
 
         this->Wind = Wind;
         IsBlock = 1;
-        TypeELEM = "Begin";
-        TypeOfBlock = "Begin";
+        TypeELEM = "Router";
+        TypeOfBlock = "Router";
         //removeChildren(BlockButton);
         //delete BlockButton;
         BlockButton = new ButtonOnBlock(0.171429, 0.823834, 0.828, 0.144, this, this);
@@ -916,8 +916,8 @@ public:
 
         this->Wind = Wind;
         IsBlock = 1;
-        TypeELEM = "End";
-        TypeOfBlock = "End";
+        TypeELEM = "Switch";
+        TypeOfBlock = "Switch";
 
         removeChildren(BlockButton);
         delete BlockButton;
@@ -977,13 +977,12 @@ public:
         double width, double heigth, double left, double top, Object *parent, QMainWindow *Wind)
         : RouterBlock(width, heigth, left, top, parent, Wind)
     {
-        TypeOfBlock = "Match";
-        TypeELEM = "Match";
+        TypeOfBlock = "Server";
+        TypeELEM = "Server";
 
         removeChildren(BlockButton);
         delete BlockButton;
         BlockButton = new ButtonOnBlock(0.16, 1, 0.840, 0, this, this);
-        this->child[0] = BlockButton;
         //BlockButton->moveTo(0.85, 0);
 
         //BlockButton->setSize(1, 1);
@@ -998,7 +997,10 @@ public:
                                    this,
                                    this,
                                    Wind);
-        this->child[1] = LinkedItem;
+
+        addChildren(BlockButton);
+        addChildren(LinkedItem);
+
     }
     void paint(QMainWindow *Wind, QPainter *p, QImage Imag, QRect frame=QRect(-1,-1,-1,-1)) override
     {

@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent, QRect Desctop)
                           0,
                           ui->menuBar->height());
     MainObject->addChildren(new LeftMenu(0.089, 0.74, 0, 0.015, MainObject));
-    MainObject->addChildren(new PipeModButton(0.07, 0.16, 0.006, 0.785, MainObject));
+    MainObject->addChildren(this->PipeModB=new PipeModButton(0.07, 0.16, 0.006, 0.785, MainObject));
     MainObject->child[0]->addChildren(
         new RouterBlock(0.85, 0.065, 0.06, 0.06, MainObject->child[0], this));
     MainObject->child[0]->addChildren(
@@ -53,10 +53,10 @@ MainWindow::MainWindow(QWidget *parent, QRect Desctop)
     MainObject->addChildren(new VariablePanel(0.1645, 0.56, 0.8355, 0.412, MainObject, this));
     MainWorkSpace = new Workspace(0.748, 0.5, 0.087, 0.035, MainObject, nullptr, this);
 
-    MainWorkspace_father =new Scrollable(0.748, 0.94, 0.087, 0.035, MainObject, MainWorkSpace);
+
 
     //MainWorkSpace->addChildren(new WidgetM());
-    MainObject->addChildren(MainWorkspace_father);
+    MainObject->addChildren(MainWorkspace_father =new Scrollable(0.748, 0.94, 0.087, 0.035, MainObject, MainWorkSpace));
 }
 
 QCursor c;
@@ -107,11 +107,14 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
             SelectObject = MainObject->whoIsDaddy(&TempArea);
             if (SelectObject != nullptr) {
                 if (SelectObject->IsBlock) {
-                    FukingActiveSlot++;
-                    prev_x = c.pos().x();
-                    prev_y = c.pos().y();
-                    this->event = event;
-                    T->start(10);
+
+                    if (!PipeModB->isPipeMode){
+                        FukingActiveSlot++;
+                        prev_x = c.pos().x();
+                        prev_y = c.pos().y();
+                        this->event = event;
+                        T->start(10);
+                    }
                 } else if (SelectObject->IsButton) {
                     if (SelectObject->parent->IsBlock) {
                         SelectObject->parent->activate = !(SelectObject->parent->activate);
@@ -144,10 +147,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
             if (SelectObject->IsBlock && SelectObject->parent->TypeELEM == "LeftMenu") {
 
                 //QMessageBox::information(this, "Info", "SelectedItem.Old_Parent==LeftMenu");
-                if (SelectObject->TypeELEM == "Begin") {
+                if (SelectObject->TypeELEM == "Router") {
                     SelectObject->parent->addChildren(
                         new RouterBlock(0.85, 0.065, 0.06, 0.06, MainObject->child[0], this));
-                } else if (SelectObject->TypeELEM == "End") {
+                } else if (SelectObject->TypeELEM == "Switch") {
                     MainObject->child[0]->addChildren(
                         new SwitchBlock(0.85, 0.065, 0.06, 0.145, MainObject->child[0], this));
                 //} else if (SelectObject->TypeELEM == "DataInput") {
@@ -156,7 +159,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                 //} else if (SelectObject->TypeELEM == "DataOutput") {
                 //    MainObject->child[0]->addChildren(
                 //        new DataOutputBlock(0.85, 0.065, 0.06, 0.375, MainObject->child[0], this));
-                } else if (SelectObject->TypeELEM == "Match") {
+                } else if (SelectObject->TypeELEM == "Server") {
                     MainObject->child[0]->addChildren(
                         new ServerBlock(0.85, 0.065, 0.06, 0.46, MainObject->child[0], this));
                 //} else if (SelectObject->TypeELEM == "If") {
@@ -176,11 +179,17 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                                                         SelectObject));
 
             Object *fatherOrMother = MainObject->whoIsDaddy(&TempArea);
-            SelectObject->parent = fatherOrMother;
-            fatherOrMother->addChildren(SelectObject);
-            SelectObject->setSizeHARD(SelectObject->w(), SelectObject->h());
-            SelectObject->moveToHARD(SelectObject->x(), SelectObject->y());
+            while (fatherOrMother!=nullptr && fatherOrMother->TypeELEM!="Workspace")
+                fatherOrMother=fatherOrMother->parent;
+            if (fatherOrMother==nullptr){
+                delete SelectObject;
+            }else{
+                SelectObject->parent = fatherOrMother;
+                fatherOrMother->addChildren(SelectObject);
+                SelectObject->setSizeHARD(SelectObject->w(), SelectObject->h());
+                SelectObject->moveToHARD(SelectObject->x(), SelectObject->y());
             //QMessageBox::critical(this, QString::number(SelectObject->parent->child.size()), "Release");
+            }
         }
         FukingActiveSlot--;
     }
