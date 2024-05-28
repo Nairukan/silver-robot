@@ -154,7 +154,7 @@ void DeleteButton::mousePressEvent(QMouseEvent *event)
 
 void PortB::mousePressEvent(QMouseEvent *event)
 {
-
+    QMessageBox::information(qobject_cast<QWidget*>(parent()), QString("Info"), "Click to "+QString::number(Num) + " port on " + QString(N_Parent->MenuFather->parent->TypeELEM) + " block");
 }
 
 void WidgetM::setGeometry(int x, int y, int w, int h)

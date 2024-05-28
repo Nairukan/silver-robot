@@ -578,7 +578,7 @@ public:
                 p->rotate(90);
                 p->setPen(l);
                 UserMenu->show();
-            } else if (LinkedItem->TypeOfBlock == "Server") {
+            } else if (LinkedItem->TypeOfBlock == "Server" || LinkedItem->TypeOfBlock == "Client") {
                 p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1382, 766, 413, 250));
                 QPen l = p->pen();
                 QFont f = Wind->font();
@@ -625,9 +625,11 @@ public:
                               (int) (this->w() * 0.88),
                               (int) (this->h() * 0.96));
         UserMenu->BUTTONS.push_back(new DeleteButton(UserMenu, qobject_cast<VirtualWindow *>(Wind)));
-        UserMenu->BUTTONS[0]->text() = "DELETE";
+        UserMenu->BUTTONS[0]->setText("DELETE");
+        auto ff=UserMenu->BUTTONS[0]->font(); ff.setBold(true);
+        UserMenu->BUTTONS[0]->setFont(ff);
         UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25 / 2, 0.70 * heigth);
-        UserMenu->BUTTONS[0]->resize(UserMenu->width() * 0.75, UserMenu->height() * 0.2);
+        UserMenu->BUTTONS[0]->resize(UserMenu->width() * 0.75, UserMenu->height() * 0.25);
 
         if (parent->TypeELEM=="Server")
             CountPorts=2;
@@ -640,8 +642,9 @@ public:
 
         UserMenu->BUTTONS.resize(CountPorts+1);
         for (int i=0; i<CountPorts; ){
-            UserMenu->BUTTONS[i+1]=new PortB(UserMenu,  qobject_cast<VirtualWindow *>(Wind));
-            qobject_cast<PortB*>(UserMenu->BUTTONS[++i])->Num=i;
+            ++i;
+            UserMenu->BUTTONS[i]=new PortB(UserMenu,  qobject_cast<VirtualWindow *>(Wind));
+            qobject_cast<PortB*>(UserMenu->BUTTONS[i])->Num=i-1;
         }
         UserMenu->hide();
         updateGeometry();
@@ -661,14 +664,60 @@ public:
                               (int) (this->w() * 0.88),
                               (int) (this->h() * 0.96));
         UserMenu->BUTTONS[0]->move(UserMenu->width() * 0.25 / 2, 0.70 * UserMenu->height());
-        UserMenu->BUTTONS[0]->resize(UserMenu->width() * 0.75, UserMenu->height() * 0.2);
+        UserMenu->BUTTONS[0]->resize(UserMenu->width() * 0.75, UserMenu->height() * 0.25);
+        if (CountPorts==1){
+            auto sz=QSize(std::min(UserMenu->width() * 0.40, UserMenu->height() * 0.4), std::min(UserMenu->width() * 0.4, UserMenu->height() * 0.4));
+            UserMenu->BUTTONS[1]->resize(sz);
+            int air=UserMenu->width()-sz.width(); air/=2;
+            UserMenu->BUTTONS[1]->move(air, (UserMenu->height()*0.7-UserMenu->BUTTONS[1]->height())/2);
+        }
         if (CountPorts==2){
+            auto sz=QSize(std::min(UserMenu->width() * 0.40, UserMenu->height() * 0.4), std::min(UserMenu->width() * 0.4, UserMenu->height() * 0.4));
+            UserMenu->BUTTONS[1]->resize(sz);
+            UserMenu->BUTTONS[2]->resize(sz);
+            int air=UserMenu->width()-sz.width()*2; air/=3;
 
-            UserMenu->BUTTONS[1]->resize(std::min(UserMenu->width() * 0.40, UserMenu->height() * 0.4), std::min(UserMenu->width() * 0.4, UserMenu->height() * 0.4));
-            UserMenu->BUTTONS[1]->move((UserMenu->width()/2 - UserMenu->BUTTONS[1]->width())/2, (UserMenu->height()*0.7-UserMenu->BUTTONS[1]->height())/2);
+            UserMenu->BUTTONS[1]->move(air, (UserMenu->height()*0.7-UserMenu->BUTTONS[1]->height())/2);
 
-            UserMenu->BUTTONS[2]->resize(UserMenu->BUTTONS[1]->width(),  UserMenu->BUTTONS[1]->height());
-            UserMenu->BUTTONS[2]->move(UserMenu->width()/2+(UserMenu->width()/2 - UserMenu->BUTTONS[2]->width())/2, UserMenu->BUTTONS[1]->y());
+            UserMenu->BUTTONS[2]->move(air*2+sz.width(), UserMenu->BUTTONS[1]->y());
+        }else if (CountPorts==4){
+            auto sz=QSize(std::min(UserMenu->width() * 0.40, UserMenu->height() * 0.4), std::min(UserMenu->width() * 0.4, UserMenu->height() * 0.4));
+            UserMenu->BUTTONS[1]->resize(sz);
+            UserMenu->BUTTONS[2]->resize(sz);
+            UserMenu->BUTTONS[3]->resize(sz);
+            UserMenu->BUTTONS[4]->resize(sz);
+            int air=UserMenu->width()-sz.width()*4; air/=5;
+
+            UserMenu->BUTTONS[1]->move(air, (UserMenu->height()*0.7-UserMenu->BUTTONS[1]->height())/2);
+
+            UserMenu->BUTTONS[2]->move(air*2+sz.width(), UserMenu->BUTTONS[1]->y());
+
+            UserMenu->BUTTONS[3]->move(air*3+sz.width()*2, UserMenu->BUTTONS[1]->y());
+
+            UserMenu->BUTTONS[4]->move(air*4+sz.width()*3, UserMenu->BUTTONS[1]->y());
+
+        }else if (CountPorts==8){
+            auto sz=QSize(std::min(UserMenu->width() * 0.40, UserMenu->height() * 0.30), std::min(UserMenu->width() * 0.4, UserMenu->height() * 0.30));
+            UserMenu->BUTTONS[1]->resize(sz);
+            UserMenu->BUTTONS[2]->resize(sz);
+            UserMenu->BUTTONS[3]->resize(sz);
+            UserMenu->BUTTONS[4]->resize(sz);
+            UserMenu->BUTTONS[5]->resize(sz);
+            UserMenu->BUTTONS[6]->resize(sz);
+            UserMenu->BUTTONS[7]->resize(sz);
+            UserMenu->BUTTONS[8]->resize(sz);
+            int air=UserMenu->width()-sz.width()*4; air/=5;
+            int hair=UserMenu->height()*0.7-sz.width()*2; hair/=3;
+            UserMenu->BUTTONS[1]->move(air, hair);
+            UserMenu->BUTTONS[2]->move(air*2+sz.width(), hair);
+            UserMenu->BUTTONS[3]->move(air*3+sz.width()*2, hair);
+            UserMenu->BUTTONS[4]->move(air*4+sz.width()*3, hair);
+
+            UserMenu->BUTTONS[5]->move(air, hair*2+sz.width());
+            UserMenu->BUTTONS[6]->move(air*2+sz.width(), hair*2+sz.width());
+            UserMenu->BUTTONS[7]->move(air*3+sz.width()*2, hair*2+sz.width());
+            UserMenu->BUTTONS[8]->move(air*4+sz.width()*3, hair*2+sz.width());
+
         }
     }
 
@@ -923,6 +972,83 @@ public:
         QRect TextBound(x() + w() * 0.01376,
                         y() + h() * 0.533333 / 2,
                         w() * (0.5711 - 0.014),
+                        h() * 0.46666);
+        QFontMetrics FM(f);
+        for (;;) {
+            wid = FM.horizontalAdvance(Text);
+            he = FM.height();
+            //updateGeometry();
+            if ((TextBound.width() >= wid && TextBound.height() >= he) || f.pointSize() == 1) {
+                break;
+            }
+            f.setPointSize(f.pointSize() - 1);
+            QFontMetrics tmp(f);
+            FM = tmp;
+        }
+        p->setFont(f);
+        QPen l = p->pen();
+        p->setPen(Qt::black);
+        p->drawText(QRect(TextBound.x()
+                              + (TextBound.width() - p->fontMetrics().horizontalAdvance(Text)) / 2,
+                          TextBound.y() + (TextBound.height() - p->fontMetrics().height()) / 2,
+                          100,
+                          p->fontMetrics().height()),
+                    Text);
+        p->setPen(l);
+    }
+    QString Text;
+};
+
+
+class ClientBlock : public RouterBlock
+{
+public:
+    ClientBlock(
+        double width, double heigth, double left, double top, Object *parent, QMainWindow *Wind)
+        : RouterBlock(width, heigth, left, top, parent, Wind)
+    {
+        TypeOfBlock = "Client";
+        TypeELEM = "Client";
+
+        removeChildren(BlockButton);
+        delete BlockButton;
+        BlockButton = new ButtonOnBlock(0.16, 1, 0.840, 0, this, this);
+        //BlockButton->moveTo(0.85, 0);
+
+        //BlockButton->setSize(1, 1);
+        //BlockButton->updateGeometry();
+
+        removeChildren(LinkedItem);
+        delete LinkedItem;
+        LinkedItem = new BlockMenu(1.583,
+                                   2.1,
+                                   1 - (double) BlockButton->kofWidth * this->width / this->width,
+                                   (double) BlockButton->kofTop * this->heigth / this->heigth,
+                                   this,
+                                   this,
+                                   Wind);
+
+        addChildren(BlockButton);
+        addChildren(LinkedItem);
+    }
+    void paint(QMainWindow *Wind,
+               QPainter *p,
+               QImage Imag,
+               QRect frame = QRect(-1, -1, -1, -1)) override
+    {
+        p->drawImage(QRect(x(), y(), w(), h()), Imag, QRect(1454, 98, 299, 118));
+        p->drawImage(QRect(x() + 0.5711 * w() -( h() * 0.94 -w() * 0.18578)/2, y() + h() * 0.2 / 2, h() * 0.94, h() * 0.8),
+                     Imag,
+                     QRect(741, 660, 94, 80));
+        QString Text = "Client";
+        Text += (Num ? " " + QString::number(Num) : "");
+        QFont f = Wind->font();
+        f.setPointSize(13);
+        f.setBold(1);
+        int wid, he;
+        QRect TextBound(x() + w() * 0.01376,
+                        y() + h() * 0.533333 / 2,
+                        (0.5711 * w() -( h() * 0.94 -w() * 0.18578)/2)+w() * ( - 0.014),
                         h() * 0.46666);
         QFontMetrics FM(f);
         for (;;) {

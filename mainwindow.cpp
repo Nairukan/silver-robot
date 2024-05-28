@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent, QRect Desctop)
     //    new DataOutputBlock(0.85, 0.065, 0.06, 0.375, MainObject->child[0], this));
     MainObject->child[0]->addChildren(
         new ServerBlock(0.85, 0.065, 0.06, 0.46, MainObject->child[0], this));
+    MainObject->child[0]->addChildren(
+        new ClientBlock(0.85, 0.065, 0.06, 0.375, MainObject->child[0], this));
     //MainObject->child[0]->addChildren(
     //    new IfBlock(0.85, 0.065, 0.06, 0.605, MainObject->child[0], this));
     //MainObject->child[0]->addChildren(
@@ -160,6 +162,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                 } else if (SelectObject->TypeELEM == "Server") {
                     MainObject->child[0]->addChildren(
                         new ServerBlock(0.85, 0.065, 0.06, 0.46, MainObject->child[0], this));
+                } else if (SelectObject->TypeELEM == "Client") {
+                    MainObject->child[0]->addChildren(
+                        new ClientBlock(0.85, 0.065, 0.06, 0.375, MainObject->child[0], this));
                     //} else if (SelectObject->TypeELEM == "If") {
                     //    MainObject->child[0]->addChildren(
                     //        new IfBlock(0.85, 0.065, 0.06, 0.605, MainObject->child[0], this));
@@ -168,11 +173,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
                     //        new WhileBlock(0.85, 0.065, 0.06, 0.69, MainObject->child[0], this));
                 }
             } else {
-                QMessageBox::information(this,
+                /*QMessageBox::information(this,
                                          "Info",
                                          "SelectedItem.Old_Parent!=LeftMenu\n"
                                              + QString("OLD_parent=="
                                                        + SelectObject->parent->TypeELEM));
+                */
             }
             SelectObject->parent->child.erase(std::find(SelectObject->parent->child.begin(),
                                                         SelectObject->parent->child.end(),
